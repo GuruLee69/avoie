@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insane Interactive Visualizer</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden; /* Prevent scrollbars */
+            background-color: #000; /* Dark background for contrast */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            cursor: crosshair; /* Indicate interactivity */
+        }
+        canvas {
+            display: block; /* Remove potential extra space below canvas */
+            /* Optional: Add a subtle border if needed */
+            /* border: 1px solid #222; */
+        }
+        /* Optional: Add a small text hint */
+        #hint {
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.3);
+            font-family: sans-serif;
+            font-size: 12px;
+            pointer-events: none; /* Don't let it interfere with canvas events */
+            text-shadow: 0 0 5px black;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="visualizerCanvas"></canvas>
+    <div id="hint">Move mouse & Click</div>
+
+    <script>
+        const canvas = document.getElementById('visualizerCanvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let shapes = [];
+        let particles = []; // For click effect
+        let hue = 0; // Global hue for color cycling
+
+        const mouse = {
+            x: null,
+            y: null,
+            radius: 100 // Area of influence for repulsion
+        };
+
+        // --- Shape Class ---
+        class Shape {
+            constructor(x, y) {
+                this.x = x || Math.random() * width;
+                this.y = y || Math.random() * height;
+                this.size = Math.random() * 20 + 10; // Base size
+                this.baseSize = this.size;
+                this.vx = (Math.random() - 0.5) * 3; // Velocity x
+                this.vy = (Math.random() - 0.5) * 3; // Velocity y
+                this.hue = hue; // Initial hue based on global hue
+                this.saturation = Math.random() * 30 + 70; // 70-100%
+                this.lightness = Math.random() * 20 + 40; // 40-60%
+                this.opacity = 0.8 + Math.random() * 0.2;
+                this.rotation = Math.random() * Math.PI * 2;
+                this.rotationSpeed = (Math.random() - 0.5) * 0.04;
+                this.pulseSpeed = Math.random() * 0.05 + 0.01;
+                this.pulseAmount = Math.random() * 0.3 + 0.1; // Percentage of base size
+                this.type = ['circle', 'square', 'triangle'][Math.floor(Math.random() * 3)];
+            }
+
+            update() {
+                // Pulsating effect
+                this.size = this.baseSize * (1 + Math.sin(Date.now() * this.pulseSpeed) * this.pulseAmount);
+
+                // Movement
+                this.x += this.vx;
+                this.y += this.vy;
+
+                // Rotation
+                this.rotation += this.rotationSpeed;
+
+                // Bounce off walls
+                if (this.x + this.size > width || this.x - this.size < 0) {
+                    this.vx *= -1;
+                    // Nudge back inside bounds slightly to prevent sticking
+                    this.x = Math.max(this.size, Math.min(width - this.size, this.x));
+                }
+                if (this.y + this.size > height || this.y - this.size < 0) {
+                    this.vy *= -1;
+                    this.y = Math.max(this.size, Math.min(height - this.size, this.y));
+                }
+
+                // Mouse interaction (repulsion)
+                if (mouse.x !== null) {
+                    const dx = this.x - mouse.x;
+                    const dy = this.y - mouse.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    const forceDirectionX = dx / distance;
+                    const forceDirectionY = dy / distance;
+
+                    // Calculate force based on distance (stronger when closer)
+                    const maxDistance = mouse.radius;
+                    if (distance < maxDistance) {
+                        const force = (maxDistance - distance) / maxDistance;
+                        const pushStrength = 3; // How strongly shapes are pushed
+                        this.vx += forceDirectionX * force * pushStrength;
+                        this.vy += forceDirectionY * force * pushStrength;
+                    }
+                }
+
+                // Optional: Add slight drag/friction to slow down over time
+                // this.vx *= 0.99;
+                // this.vy *= 0.99;
+
+                // Keep velocity reasonable
+                const maxSpeed = 5;
+                const speed = Math.sqrt(this.vx*this.vx + this.vy*this.vy);
+                if (speed > maxSpeed) {
+                    this.vx = (this.vx / speed) * maxSpeed;
+                    this.vy = (this.vy / speed) * maxSpeed;
+                }
+
+                 // Update color slightly based on velocity or position (optional extra insanity)
+                 // this.hue = (this.hue + Math.abs(this.vx) + Math.abs(this.vy)) % 360;
+                 this.hue = (this.hue + 0.1) % 360; // Cycle hue slowly
+
+            }
+
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation);
+                ctx.fillStyle = `hsla(${this.hue}, ${this.saturation}%, ${this.lightness}%, ${this.opacity})`;
+                ctx.strokeStyle = `hsla(${this.hue}, ${this.saturation}%, ${this.lightness + 10}%, ${this.opacity * 0.8})`;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+
+                switch (this.type) {
+                    case 'circle':
+                        ctx.arc(0, 0, this.size, 0, Math.PI * 2);
+                        break;
+                    case 'square':
+                        ctx.rect(-this.size / 2, -this.size / 2, this.size, this.size);
+                        break;
+                    case 'triangle':
+                        const side = this.size * 1.5; // Make triangles a bit larger visually
+                        ctx.moveTo(0, -side / 2);
+                        ctx.lineTo(side / 2, side / 2);
+                        ctx.lineTo(-side / 2, side / 2);
+                        ctx.closePath();
+                        break;
+                }
+
+                ctx.fill();
+                // Optional: add stroke for definition
+                // ctx.stroke();
+                ctx.restore();
+            }
+        }
+
+        // --- Particle Class (for click effect) ---
+         class Particle extends Shape { // Inherit basic properties
+             constructor(x, y, parentHue) {
+                 super(x, y); // Call Shape constructor
+                 this.size = Math.random() * 5 + 2; // Smaller size
+                 this.baseSize = this.size;
+                 this.vx = (Math.random() - 0.5) * (Math.random() * 10 + 5); // Faster initial burst
+                 this.vy = (Math.random() - 0.5) * (Math.random() * 10 + 5);
+                 this.hue = parentHue + (Math.random() * 60 - 30); // Vary hue around click point
+                 this.lightness = 60 + Math.random() * 20;
+                 this.opacity = 1;
+                 this.life = 1; // Lifespan (1 = full, 0 = dead)
+                 this.decay = Math.random() * 0.02 + 0.01; // How fast it fades
+                 this.gravity = 0.1; // Optional gravity effect
+                 this.rotationSpeed = (Math.random() - 0.5) * 0.2; // Faster spin
+                 this.type = ['circle', 'square'][Math.floor(Math.random()*2)]; // Simpler particles
+                 this.pulseAmount = 0; // No pulsing for particles
+             }
+
+             update() {
+                // Override Shape update, implement particle specific logic
+                this.life -= this.decay;
+                this.opacity = this.life;
+
+                if (this.life <= 0) return; // Skip update/draw if dead
+
+                // Movement with decay and gravity
+                this.x += this.vx;
+                this.y += this.vy;
+                this.vy += this.gravity; // Apply gravity
+                this.vx *= 0.98; // Air resistance
+                this.vy *= 0.98;
+
+                this.rotation += this.rotationSpeed;
+
+                // Keep particles on screen (optional, could just let them fly off)
+                // if (this.x > width || this.x < 0 || this.y > height ) {
+                //    this.life = 0; // Kill if off screen (except top)
+                // }
+             }
+
+             // Uses the draw method inherited from Shape, but opacity is controlled by life
+              draw() {
+                  if (this.life <= 0) return;
+
+                  ctx.save();
+                  ctx.globalAlpha = this.opacity; // Use globalAlpha for fading particles
+                  ctx.translate(this.x, this.y);
+                  ctx.rotate(this.rotation);
+                  ctx.fillStyle = `hsla(${this.hue}, ${this.saturation}%, ${this.lightness}%, 1)`; // Use full alpha for color, globalAlpha controls actual draw opacity
+
+                  ctx.beginPath();
+                  switch (this.type) {
+                    case 'circle':
+                        ctx.arc(0, 0, this.size, 0, Math.PI * 2);
+                        break;
+                    case 'square':
+                        ctx.rect(-this.size / 2, -this.size / 2, this.size, this.size);
+                        break;
+                  }
+                  ctx.fill();
+                  ctx.restore();
+             }
+         }
+
+
+        // --- Setup ---
+        function init() {
+            resizeCanvas();
+            shapes = [];
+            particles = [];
+            const numberOfShapes = Math.floor((width * height) / 15000); // Adjust density based on screen area
+            for (let i = 0; i < numberOfShapes; i++) {
+                shapes.push(new Shape());
+            }
+             console.log(`Initialized with ${numberOfShapes} shapes.`);
+        }
+
+        function resizeCanvas() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            // Re-initialize or adjust shapes on resize if needed (optional)
+            // init(); // This would reset the visualization on resize
+            mouse.radius = Math.min(width, height) * 0.15; // Adjust mouse radius based on screen size
+        }
+
+        // --- Animation Loop ---
+        function animate() {
+            // Clear canvas with semi-transparent background for trails effect
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'; // Adjust alpha for trail length (lower = longer)
+            ctx.fillRect(0, 0, width, height);
+
+             // Update and draw shapes
+            shapes.forEach((shape, index) => {
+                shape.update();
+                shape.draw();
+            });
+
+             // Update and draw particles
+            particles.forEach((particle, index) => {
+                particle.update();
+                 if (particle.life <= 0) {
+                     particles.splice(index, 1); // Remove dead particles
+                 } else {
+                     particle.draw();
+                 }
+            });
+
+            // Cycle global hue
+            hue = (hue + 0.5) % 360;
+
+            requestAnimationFrame(animate); // Loop
+        }
+
+        // --- Event Listeners ---
+        window.addEventListener('resize', resizeCanvas);
+
+        window.addEventListener('mousemove', (event) => {
+            mouse.x = event.clientX;
+            mouse.y = event.clientY;
+        });
+
+        window.addEventListener('mouseleave', () => {
+            mouse.x = null;
+            mouse.y = null;
+        });
+
+         window.addEventListener('click', (event) => {
+             const clickX = event.clientX;
+             const clickY = event.clientY;
+             const particleCount = 30 + Math.random() * 20; // Burst of 30-50 particles
+             const clickHue = (hue + Math.random() * 60) % 360; // Base hue for the burst
+
+             for (let i = 0; i < particleCount; i++) {
+                 particles.push(new Particle(clickX, clickY, clickHue));
+             }
+         });
+
+        // --- Start ---
+        init();
+        animate();
+
+    </script>
+</body>
+</html>
