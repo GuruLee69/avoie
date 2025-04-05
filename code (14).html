@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Datukius - Experience the Future</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        /* --- Global Styles & Variables --- */
+        :root {
+            --primary-color: #8e44ad; /* Vibrant Purple */
+            --secondary-color: #3498db; /* Cool Blue */
+            --accent-color: #e74c3c; /* Energetic Red/Orange */
+            --bg-color: #1a1a2e; /* Deep Space Blue/Black */
+            --card-bg-color: #1f1f38; /* Slightly lighter background for cards */
+            --text-color: #e0e0e0; /* Light Grey/White */
+            --heading-color: #ffffff;
+            --gradient-bg: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            --gradient-text: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            --font-heading: 'Orbitron', sans-serif;
+            --font-body: 'Poppins', sans-serif;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            --card-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            --border-radius: 15px;
+            --transition-speed: 0.3s ease;
+            --scroll-padding: 80px; /* Adjust based on fixed header height */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: var(--scroll-padding); /* Offset for fixed header */
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.7;
+            overflow-x: hidden; /* Prevent horizontal scroll */
+        }
+
+        /* --- Utility Classes --- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            border-radius: 50px;
+            background: var(--gradient-bg);
+            color: #fff;
+            font-weight: 600;
+            text-decoration: none;
+            transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(142, 68, 173, 0.5); /* Shadow color related to primary */
+        }
+
+        .section-title {
+            font-family: var(--font-heading);
+            font-size: 2.5rem;
+            color: var(--heading-color);
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--gradient-bg);
+            border-radius: 2px;
+        }
+
+        h1, h2, h3 {
+            font-family: var(--font-heading);
+            color: var(--heading-color);
+            margin-bottom: 15px;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        section {
+            padding: 80px 0;
+        }
+
+        /* Add subtle texture/noise to background */
+        body::before {
+          content: "";
+          position: fixed;
+          top: 0; left: 0;
+          width: 100%; height: 100%;
+          background: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="4" height="4" viewBox="0 0 4 4"%3E%3Cpath fill="%23ffffff" fill-opacity="0.02" d="M1 3h1v1H1V3zm2-2h1v1H3V1z"%3E%3C/path%3E%3C/svg%3E');
+          opacity: 0.5;
+          z-index: -1;
+        }
+
+
+        /* --- Header --- */
+        .main-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 15px 0;
+            background: rgba(26, 26, 46, 0.85); /* Slightly transparent bg */
+            backdrop-filter: blur(10px);
+            transition: background-color var(--transition-speed), box-shadow var(--transition-speed);
+        }
+
+        .main-header.scrolled {
+             background: rgba(26, 26, 46, 0.98);
+             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+
+        .main-header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: var(--font-heading);
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-decoration: none;
+            color: var(--heading-color);
+            letter-spacing: 1px;
+        }
+         .logo span { /* Optional: Gradient effect on part of logo */
+            background: var(--gradient-text);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+           text-fill-color: transparent;
+         }
+
+
+        .main-nav ul {
+            list-style: none;
+            display: flex;
+        }
+
+        .main-nav ul li {
+            margin-left: 30px;
+        }
+
+        .main-nav ul li a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            position: relative;
+            padding-bottom: 5px;
+            transition: color var(--transition-speed);
+        }
+
+        .main-nav ul li a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gradient-bg);
+            transition: width var(--transition-speed);
+        }
+
+        .main-nav ul li a:hover {
+            color: var(--heading-color);
+        }
+
+        .main-nav ul li a:hover::after {
+            width: 100%;
+        }
+
+         /* --- Hero Section --- */
+        #hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            background: url('https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80') no-repeat center center/cover;
+            background-attachment: fixed; /* Parallax effect */
+            padding-top: 100px; /* Account for header */
+        }
+
+        /* Overlay for text contrast */
+        #hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(26, 26, 46, 0.7); /* Dark overlay */
+            z-index: 1;
+        }
+
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+        }
+
+        .hero-content h1 {
+            font-size: 4rem; /* Larger for impact */
+            margin-bottom: 20px;
+            line-height: 1.2;
+            background: var(--gradient-text);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+             background-clip: text;
+             text-fill-color: transparent;
+            animation: textShine 5s linear infinite;
+             background-size: 200% auto;
+        }
+
+        /* Subtle text shine animation */
+       @keyframes textShine {
+            to {
+                background-position: 200% center;
+            }
+        }
+
+        .hero-content p {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+
+        /* --- Features Section --- */
+        #features {
+            background-color: var(--card-bg-color); /* Different background */
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 40px;
+            margin-top: 50px;
+        }
+
+        .feature-card {
+            background-color: var(--bg-color);
+            padding: 35px 30px;
+            border-radius: var(--border-radius);
+            text-align: center;
+            box-shadow: var(--card-shadow);
+            transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            display: inline-block;
+            background: var(--gradient-bg);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+             background-clip: text;
+             text-fill-color: transparent;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            color: var(--heading-color);
+            margin-bottom: 15px;
+        }
+
+        /* --- Design Section --- */
+        #design {
+             background: linear-gradient(rgba(26, 26, 46, 0.9), rgba(26, 26, 46, 0.9)), url('https://images.unsplash.com/photo-1604871000636-074fa5117945?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80') no-repeat center center/cover;
+             background-attachment: fixed;
+        }
+
+        .design-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: center;
+        }
+
+        .design-image img {
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+             transform: rotate(-3deg); /* Slight playful rotation */
+             transition: transform 0.5s ease-out;
+        }
+       .design-image:hover img {
+             transform: rotate(0deg) scale(1.03);
+        }
+
+        .design-text h2 {
+            font-size: 2.2rem;
+        }
+
+        .design-text p {
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+
+
+         /* --- Gallery Section --- */
+         .gallery-grid {
+             display: grid;
+             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+             gap: 15px;
+             margin-top: 50px;
+         }
+
+         .gallery-item img {
+             border-radius: 10px;
+             transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+             box-shadow: var(--card-shadow);
+         }
+
+         .gallery-item img:hover {
+             transform: scale(1.05);
+             box-shadow: var(--shadow);
+         }
+
+
+         /* --- Specs Section --- */
+         #specs {
+             background-color: var(--card-bg-color);
+         }
+         .specs-table {
+            width: 100%;
+            max-width: 800px;
+            margin: 50px auto;
+            border-collapse: collapse; /* Remove gaps between cells */
+            background-color: var(--bg-color);
+            border-radius: var(--border-radius);
+            overflow: hidden; /* Clip corners for border-radius */
+            box-shadow: var(--card-shadow);
+         }
+        .specs-table th, .specs-table td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+       .specs-table th {
+            background: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), var(--gradient-bg); /* Subtle overlay on gradient */
+            color: #fff;
+            font-family: var(--font-heading);
+            font-weight: 600;
+            width: 40%; /* Give header column more defined width */
+        }
+
+       .specs-table tr:last-child td {
+            border-bottom: none; /* Remove border from last row */
+       }
+
+       .specs-table tr:nth-child(even) {
+            background-color: rgba(255, 255, 255, 0.03); /* Subtle row striping */
+       }
+
+         /* --- Pre-order Section --- */
+         #preorder {
+             text-align: center;
+             background: var(--gradient-bg);
+             color: #fff;
+         }
+         #preorder .section-title {
+             color: #fff;
+         }
+         #preorder .section-title::after {
+             background: #fff; /* White underline on gradient bg */
+         }
+
+         #preorder p {
+             max-width: 600px;
+             margin: 0 auto 30px auto;
+             font-size: 1.1rem;
+         }
+
+         #preorder .btn {
+            background: #fff;
+            color: var(--primary-color);
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+         }
+        #preorder .btn:hover {
+            background: #eee;
+             box-shadow: 0 8px 20px rgba(255, 255, 255, 0.4);
+             transform: translateY(-3px);
+        }
+
+
+        /* --- Footer --- */
+        .main-footer {
+            background-color: #0d0d1f; /* Even darker footer */
+            padding: 40px 0;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+         .footer-content .logo {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            display: block;
+         }
+         .social-links a {
+             color: var(--text-color);
+             margin: 0 10px;
+             font-size: 1.5rem;
+             transition: color var(--transition-speed);
+         }
+        .social-links a:hover {
+            color: var(--primary-color);
+        }
+
+        .footer-links {
+             list-style: none;
+             padding: 0;
+             margin: 20px 0;
+         }
+
+        .footer-links li {
+             display: inline-block;
+             margin: 0 15px;
+         }
+
+        .footer-links a {
+             color: var(--text-color);
+             text-decoration: none;
+             transition: color var(--transition-speed);
+         }
+         .footer-links a:hover {
+             color: var(--secondary-color);
+         }
+        .copyright {
+             margin-top: 20px;
+             opacity: 0.7;
+        }
+
+        /* --- Scroll Reveal Animation --- */
+        [data-aos] {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        [data-aos].aos-animate {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+
+        /* --- Responsive Design --- */
+        @media (max-width: 992px) {
+            .section-title {
+                font-size: 2rem;
+            }
+            .hero-content h1 {
+                 font-size: 3rem;
+            }
+            .hero-content p {
+                 font-size: 1.1rem;
+            }
+            .design-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            .design-image {
+                 margin-bottom: 30px;
+                 order: -1; /* Put image on top on smaller screens */
+            }
+             .design-image img {
+                  margin: 0 auto; /* Center image */
+                   transform: rotate(0deg); /* Reset rotation */
+            }
+        }
+
+        @media (max-width: 768px) {
+             html {
+                 scroll-padding-top: 70px; /* Adjust for potentially smaller header */
+             }
+            .main-header .container {
+                flex-direction: column;
+                 align-items: center;
+             }
+            .logo { margin-bottom: 10px; }
+
+            .main-nav ul {
+                justify-content: center;
+                 flex-wrap: wrap; /* Allow nav items to wrap */
+             }
+            .main-nav ul li {
+                margin: 5px 15px; /* Adjust spacing for wrapped items */
+            }
+
+             .hero-content h1 {
+                 font-size: 2.5rem;
+            }
+             section { padding: 60px 0; }
+             .specs-table th, .specs-table td {
+                 padding: 10px 15px;
+                 font-size: 0.9rem;
+             }
+             .specs-table th {
+                width: 35%; /* Adjust header column width */
+             }
+
+        }
+
+         @media (max-width: 576px) {
+             .hero-content h1 { font-size: 2rem; }
+             .hero-content p { font-size: 1rem; }
+             .btn { padding: 10px 25px; font-size: 0.9rem;}
+             .section-title { font-size: 1.8rem; }
+             .feature-card { padding: 25px 20px; }
+             .footer-links li { margin: 0 10px; display: block; margin-bottom: 5px; } /* Stack footer links */
+              .social-links a { font-size: 1.3rem; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="main-header" id="mainHeader">
+        <div class="container">
+            <a href="#" class="logo">DAT<span>U</span>KIUS</a>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="#hero">Home</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#design">Design</a></li>
+                    <li><a href="#gallery">Gallery</a></li>
+                    <li><a href="#specs">Specs</a></li>
+                    <li><a href="#preorder">Pre-Order</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="hero">
+        <div class="hero-content">
+             <h1 data-aos>Datukius X1</h1>
+            <p data-aos data-aos-delay="100">Witness the dawn of a new era. Unparalleled speed, revolutionary camera, breathtaking design.</p>
+            <a href="#preorder" class="btn" data-aos data-aos-delay="200">Explore Now</a>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features">
+        <div class="container">
+            <h2 class="section-title" data-aos>Core Innovations</h2>
+            <div class="features-grid">
+                <div class="feature-card" data-aos>
+                    <!-- Use inline SVG or font icons -->
+                     <span class="feature-icon">&#128248;</span> <!-- Camera Icon -->
+                    <h3>AuraLight Camera</h3>
+                    <p>Capture stunning detail day or night with our groundbreaking low-light sensor technology and AI enhancements.</p>
+                </div>
+                 <div class="feature-card" data-aos data-aos-delay="100">
+                     <span class="feature-icon">&#128160;</span> <!-- Diamond/Crystal Icon -->
+                    <h3>Quantum Display</h3>
+                    <p>Experience true-to-life colors and fluid motion on our edge-to-edge 144Hz adaptive refresh rate display.</p>
+                </div>
+                 <div class="feature-card" data-aos data-aos-delay="200">
+                    <span class="feature-icon">&#9889;</span> <!-- Lightning Bolt -->
+                    <h3>Photon Chipset</h3>
+                    <p>Unleash blazing-fast performance and efficiency with our next-generation 3nm custom processor.</p>
+                </div>
+                <div class="feature-card" data-aos data-aos-delay="300">
+                    <span class="feature-icon">&#128267;</span> <!-- Battery Icon -->
+                    <h3>EnduraCharge Battery</h3>
+                    <p>Power through your day and beyond with intelligent battery management and ultra-fast charging.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Design Section -->
+     <section id="design">
+        <div class="container">
+             <div class="design-content">
+                 <div class="design-text" data-aos="fade-right">
+                    <h2 class="section-title" style="text-align: left; margin-bottom: 20px;">Crafted Perfection</h2>
+                     <p>The Datukius X1 features a unibody aerospace-grade alloy frame, seamlessly fused with contoured ceramic glass. Ergonomically sculpted for comfort, visually striking from every angle.</p>
+                    <p>Available in Nebula Black, Cosmic Silver, and Aurora Purple finishes.</p>
+                     <a href="#gallery" class="btn">View Gallery</a>
+                </div>
+                 <div class="design-image" data-aos="fade-left">
+                    <img src="https://via.placeholder.com/500x550/333/fff/?text=Datukius+X1+Design" alt="Datukius X1 Smartphone Design">
+                </div>
+            </div>
+        </div>
+    </section>
+
+     <!-- Gallery Section -->
+    <section id="gallery">
+        <div class="container">
+            <h2 class="section-title" data-aos>Visual Showcase</h2>
+             <div class="gallery-grid">
+                <div class="gallery-item" data-aos>
+                    <img src="https://via.placeholder.com/400x300/8e44ad/fff?text=Phone+Angle+1" alt="Datukius X1 Angle 1">
+                </div>
+                <div class="gallery-item" data-aos data-aos-delay="50">
+                    <img src="https://via.placeholder.com/400x300/3498db/fff?text=Camera+Close-up" alt="Datukius X1 Camera">
+                </div>
+                 <div class="gallery-item" data-aos data-aos-delay="100">
+                    <img src="https://via.placeholder.com/400x300/1a1a2e/e0e0e0?text=Display+Detail" alt="Datukius X1 Display">
+                 </div>
+                 <div class="gallery-item" data-aos data-aos-delay="150">
+                     <img src="https://via.placeholder.com/400x300/e74c3c/fff?text=Side+Profile" alt="Datukius X1 Side">
+                 </div>
+                 <div class="gallery-item" data-aos data-aos-delay="200">
+                     <img src="https://via.placeholder.com/400x300/1f1f38/e0e0e0?text=In+Hand+Shot" alt="Datukius X1 In Hand">
+                 </div>
+                 <div class="gallery-item" data-aos data-aos-delay="250">
+                     <img src="https://via.placeholder.com/400x300/777/fff?text=Lifestyle+Image" alt="Datukius X1 Lifestyle">
+                 </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Specs Section -->
+     <section id="specs">
+         <div class="container">
+            <h2 class="section-title" data-aos>Technical Specifications</h2>
+             <table class="specs-table" data-aos>
+                <tbody>
+                    <tr>
+                        <th>Display</th>
+                        <td>6.8" Quantum AMOLED, 144Hz Adaptive Refresh, HDR10+, 2000 Nits Peak</td>
+                    </tr>
+                    <tr>
+                         <th>Processor</th>
+                         <td>Datukius Photon P1 (3nm Octa-Core)</td>
+                    </tr>
+                    <tr>
+                        <th>RAM</th>
+                         <td>12GB / 16GB LPDDR5X</td>
+                    </tr>
+                     <tr>
+                        <th>Storage</th>
+                        <td>256GB / 512GB / 1TB UFS 4.0</td>
+                    </tr>
+                     <tr>
+                        <th>Main Camera</th>
+                        <td>108MP AuraLight Sensor (f/1.7, OIS) + 48MP Ultra-Wide (f/2.2) + 12MP Periscope Telephoto (5x Optical, OIS)</td>
+                     </tr>
+                    <tr>
+                        <th>Front Camera</th>
+                        <td>32MP Under-Display Camera (Gen 2)</td>
+                    </tr>
+                    <tr>
+                        <th>Battery</th>
+                         <td>5500mAh EnduraCharge Battery</td>
+                     </tr>
+                    <tr>
+                        <th>Charging</th>
+                        <td>120W Wired HyperCharge, 50W Wireless AuraCharge</td>
+                     </tr>
+                     <tr>
+                         <th>Connectivity</th>
+                         <td>5G (Sub-6 & mmWave), Wi-Fi 7, Bluetooth 5.4, NFC, USB-C (DisplayPort)</td>
+                     </tr>
+                     <tr>
+                         <th>OS</th>
+                         <td>DatukiusOS 7 (Based on Android)</td>
+                     </tr>
+                    <tr>
+                        <th>Dimensions</th>
+                        <td>162.5 x 75.8 x 8.5 mm</td>
+                    </tr>
+                     <tr>
+                         <th>Weight</th>
+                        <td>215g</td>
+                    </tr>
+                     <tr>
+                         <th>Durability</th>
+                        <td>IP68 Water & Dust Resistant, Ceramic Glass Shield (Front & Back)</td>
+                     </tr>
+                 </tbody>
+             </table>
+         </div>
+    </section>
+
+     <!-- Pre-order Section -->
+    <section id="preorder">
+         <div class="container" data-aos>
+            <h2 class="section-title">Ready for the Future?</h2>
+            <p>Be among the first to own the revolutionary Datukius X1. Pre-order yours today and receive exclusive launch bonuses.</p>
+            <a href="#" class="btn">Pre-Order Now</a>
+         </div>
+     </section>
+
+    <!-- Footer -->
+     <footer class="main-footer">
+         <div class="container">
+             <div class="footer-content">
+                 <a href="#" class="logo">DAT<span>U</span>KIUS</a>
+                 <ul class="footer-links">
+                    <li><a href="#features">Features</a></li>
+                     <li><a href="#design">Design</a></li>
+                    <li><a href="#">Support</a></li>
+                     <li><a href="#">About Us</a></li>
+                    <li><a href="#">Contact</a></li>
+                 </ul>
+                <div class="social-links">
+                     <!-- Replace # with actual links -->
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i> T</a>
+                     <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i> F</a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i> I</a>
+                     <a href="#" aria-label="Youtube"><i class="fab fa-youtube"></i> Y</a>
+                 </div>
+                 <p class="copyright">&copy; 2024 Datukius Inc. All rights reserved. Elevate Your Reality.</p>
+             </div>
+         </div>
+     </footer>
+
+     <!-- JavaScript at the end -->
+    <script>
+        // 1. Simple Scroll Reveal Functionality (using Intersection Observer API)
+        const aosElements = document.querySelectorAll('[data-aos]');
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('aos-animate');
+                     // Optional: Unobserve after animation to save resources
+                    // observer.unobserve(entry.target);
+                 }
+                // Optional: Remove class if element scrolls out of view (for re-animation)
+                // else {
+                //     entry.target.classList.remove('aos-animate');
+                // }
+            });
+        }, {
+             threshold: 0.1 // Trigger when 10% of the element is visible
+         });
+
+         aosElements.forEach(el => observer.observe(el));
+
+
+         // 2. Smooth Scrolling for Nav Links (already handled by CSS scroll-behavior: smooth, but good for backup/more control)
+         // This JS version can be more reliable across browsers than pure CSS sometimes.
+         const navLinks = document.querySelectorAll('.main-nav a[href^="#"]');
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                 e.preventDefault();
+                 const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                     // Get header height dynamically in case it changes
+                     const headerOffset = document.getElementById('mainHeader').offsetHeight;
+                    const elementPosition = targetElement.getBoundingClientRect().top;
+                     const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                 }
+             });
+        });
+
+
+         // 3. Add Scrolled Class to Header
+         const header = document.getElementById('mainHeader');
+         const scrollThreshold = 50; // Pixels to scroll before adding class
+
+         window.addEventListener('scroll', () => {
+            if (window.scrollY > scrollThreshold) {
+                 header.classList.add('scrolled');
+             } else {
+                 header.classList.remove('scrolled');
+            }
+        });
+
+        // --- Placeholder Icon FontAwesome Script ---
+        // In a real project, use proper FontAwesome integration or SVG icons.
+        // This is just to make the placeholder icons visible (like T, F, I, Y)
+         console.log("Datukius X1 Website Initialized");
+
+         // You could add more JS here:
+         // - Image carousel/slider for gallery
+         // - More complex animations
+        // - Form validation (though submission won't work serverlessly)
+         // - Mobile menu toggle (if you added a hamburger)
+
+    </script>
+
+</body>
+</html>
